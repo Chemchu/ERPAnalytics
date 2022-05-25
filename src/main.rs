@@ -2,6 +2,7 @@
 #[macro_use]
 extern crate rocket;
 
+use rocket::response::content;
 use rocket::serde::json::Json;
 use rocket::serde::Serialize;
 
@@ -12,31 +13,31 @@ struct SalesAnalyticsResponse {
     analytics: Option<Vec<&'static str>>,
 }
 
-// #[get("/")]
-// fn index() -> Result<HTML, String> {}
+#[get("/")]
+fn index() -> Result<content::RawHtml<String>, String> {
+    let html = include_str!("./html/index.html");
+    return Ok(content::RawHtml(String::from(html)));
+}
 
 #[get("/")]
-fn api() -> &'static str {
-    "API Description"
+fn api() -> Result<content::RawHtml<String>, String> {
+    let html = include_str!("./html/apiDescription.html");
+    return Ok(content::RawHtml(String::from(html)));
 }
 
 #[get("/sales")]
 fn sales() -> Result<Json<SalesAnalyticsResponse>, String> {
-    let res = SalesAnalyticsResponse {
+    let res: SalesAnalyticsResponse = SalesAnalyticsResponse {
         successful: true,
         message: "Hola mundo!!",
         analytics: None,
     };
-    let ventas = Json(res);
-    //let ventasErr = String::from("No ha sido posible acceder a este contenido");
-
-    return Ok(ventas);
-
-    // let res = if ventas !== Null { Ok(ventas) } else { Err(ventasErr) };
+    return Ok(Json(res));
 }
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/api", routes![api, sales])
-    //.mount("/", routes![index])
+    rocket::build()
+        .mount("/", routes![index])
+        .mount("/api", routes![api, sales])
 }
