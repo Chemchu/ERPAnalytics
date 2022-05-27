@@ -4,9 +4,10 @@ extern crate rocket;
 extern crate juniper;
 
 use rocket::response::content;
+use rocket::serde::json::from_str;
 use rocket::serde::json::Json;
+use rocket::serde::Deserialize;
 use rocket::serde::Serialize;
-use serde::Deserialize;
 
 #[derive(Deserialize)]
 struct GraphQLReqBody {
@@ -45,12 +46,17 @@ fn sales() -> Result<Json<SalesAnalyticsResponse>, String> {
 
 // Se encarga de escuchar las peticiones en GraphQL para reenviar al microservicio indicado
 #[post("/", format = "json", data = "<body>")]
-fn graphql(body: Json<GraphQLReqBody>) -> Result<Json<String>, String> {
+fn graphql(body: String) -> Result<Json<String>, std::io::Error> {
     let res = String::from("GraphQL reforward");
-    let v = body.variables.clone().unwrap();
+    // let v = body.variables.clone().unwrap();
 
-    println!("{}", body.query);
-    println!("{}", v);
+    // let json = println!(json);
+    // let r: GraphQLReqBody = from_str(&body)?;
+
+    // println!("{:?}", r);
+
+    println!("{}", body);
+    // println!("{}", v);
 
     return Ok(Json(res));
 }
