@@ -4,7 +4,7 @@ extern crate rocket;
 extern crate juniper;
 
 use rocket::response::content;
-use rocket::serde::json::{from_str, Json, Value};
+use rocket::serde::json::{Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
