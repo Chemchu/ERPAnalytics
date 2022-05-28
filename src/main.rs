@@ -4,18 +4,22 @@ extern crate rocket;
 extern crate juniper;
 
 use rocket::response::content;
-use rocket::serde::json::from_str;
-use rocket::serde::json::Json;
-use rocket::serde::Deserialize;
-use rocket::serde::Serialize;
+use rocket::serde::json::{from_str, Json, Value};
+use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct GraphQLReqBody {
     query: String,
-    variables: Option<String>,
+    variables: Option<Value>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
+struct GraphQLVariables {
+    find: Option<String>,
+    variables: Option<Value>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 struct SalesAnalyticsResponse {
     successful: bool,
     message: &'static str,
@@ -46,17 +50,14 @@ fn sales() -> Result<Json<SalesAnalyticsResponse>, String> {
 
 // Se encarga de escuchar las peticiones en GraphQL para reenviar al microservicio indicado
 #[post("/", format = "json", data = "<body>")]
-fn graphql(body: String) -> Result<Json<String>, std::io::Error> {
+fn graphql(body: Json<GraphQLReqBody>) -> Result<Json<String>, std::io::Error> {
     let res = String::from("GraphQL reforward");
-    // let v = body.variables.clone().unwrap();
+    println!("{:#?}", body.variables);
 
-    // let json = println!(json);
-    // let r: GraphQLReqBody = from_str(&body)?;
-
-    // println!("{:?}", r);
-
-    println!("{}", body);
-    // println!("{}", v);
+    // Modificar campo en JSON
+    // if let Some(name) = v.get_mut("query") {
+    //     *name = "new name".into();
+    // }
 
     return Ok(Json(res));
 }
