@@ -9,7 +9,9 @@ version = "0.1.0"
 dotenv = "0.15.0"
 juniper = "0.15.9"
 rand = "0.8.5"
+reqwest = {version = "0.11", features = ["json"]}
 serde = "1.0.137"
+tokio = {version = "1", features = ["full"]}
 
 [dependencies.rocket]
 features = ["json"]
