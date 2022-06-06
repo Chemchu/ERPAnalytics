@@ -3,9 +3,15 @@
 extern crate rocket;
 extern crate juniper;
 
+pub mod structs;
+
 use rocket::response::content;
 use rocket::serde::json::{Json, Value};
 use rocket::serde::{Deserialize, Serialize};
+use structs::Venta;
+
+// #[path = "./sales/salesAnalytics.rs"]
+// use SalesAnalytics::Venta;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct GraphQLReqBody {
@@ -38,8 +44,11 @@ fn api() -> Result<content::RawHtml<String>, String> {
     return Ok(content::RawHtml(String::from(html)));
 }
 
-#[get("/sales")]
-fn sales() -> Result<Json<SalesAnalyticsResponse>, String> {
+#[post("/sales", format = "application/json", data = "<sales>")]
+fn sales(sales: Json<Vec<Venta>>) -> Result<Json<SalesAnalyticsResponse>, String> {
+    let firstElement = &sales.first().unwrap();
+    println!("{}", &firstElement._id);
+
     let res: SalesAnalyticsResponse = SalesAnalyticsResponse {
         successful: true,
         message: "Hola mundo!!",
