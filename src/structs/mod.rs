@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
+use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Venta {
     pub _id: String,
     pub productos: Vec<ProductoVendido>,
@@ -20,7 +20,7 @@ pub struct Venta {
     pub createdAt: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ProductoVendido {
     pub _id: String,
     pub nombre: String,
@@ -32,7 +32,7 @@ pub struct ProductoVendido {
     pub ean: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Cliente {
     pub _id: String,
     pub nombre: String,
@@ -41,7 +41,7 @@ pub struct Cliente {
     pub nif: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Empleado {
     pub _id: String,
     pub nombre: String,

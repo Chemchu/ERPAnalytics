@@ -3,11 +3,13 @@
 extern crate rocket;
 extern crate juniper;
 
+pub mod salesAnalyse;
 pub mod structs;
 
 use rocket::response::content;
 use rocket::serde::json::{Json, Value};
 use rocket::serde::{Deserialize, Serialize};
+use salesAnalyse::{GetVentasPorHora, VentaPorHora};
 use structs::Venta;
 
 // #[path = "./sales/salesAnalytics.rs"]
@@ -25,11 +27,18 @@ struct GraphQLVariables {
     variables: Option<Value>,
 }
 
+// #[derive(Serialize, Deserialize, Debug)]
+// struct SalesAnalyticsResponse {
+//     successful: bool,
+//     message: &'static str,
+//     analytics: Option<Vec<&'static str>>,
+// }
+
 #[derive(Serialize, Deserialize, Debug)]
 struct SalesAnalyticsResponse {
     successful: bool,
     message: &'static str,
-    analytics: Option<Vec<&'static str>>,
+    analytics: Vec<VentaPorHora>,
 }
 
 #[get("/")]
@@ -46,13 +55,12 @@ fn api() -> Result<content::RawHtml<String>, String> {
 
 #[post("/sales", format = "application/json", data = "<sales>")]
 fn sales(sales: Json<Vec<Venta>>) -> Result<Json<SalesAnalyticsResponse>, String> {
-    let firstElement = &sales.first().unwrap();
-    println!("{}", &firstElement._id);
+    let ventasPorHora = GetVentasPorHora(sales.to_vec());
 
     let res: SalesAnalyticsResponse = SalesAnalyticsResponse {
         successful: true,
         message: "Hola mundo!!",
-        analytics: None,
+        analytics: ventasPorHora.unwrap(),
     };
     return Ok(Json(res));
 }
