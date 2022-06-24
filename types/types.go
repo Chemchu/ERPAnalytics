@@ -1,0 +1,130 @@
+package types
+
+type APIResponse struct {
+	Data *string `json:"data,omitempty"`
+}
+
+type APIData struct {
+	Message    *string `json:"message,omitempty"`
+	Successful *bool   `json:"successful,omitempty"`
+}
+
+type Venta struct {
+	ID                      *string            `json:"_id"`
+	Productos               *[]ProductoVendido `json:"productos"`
+	DineroEntregadoEfectivo *float64           `json:"dineroEntregadoEfectivo"`
+	DineroEntregadoTarjeta  *float64           `json:"dineroEntregadoTarjeta"`
+	PrecioVentaTotalSinDto  *float64           `json:"precioVentaTotalSinDto"`
+	PrecioVentaTotal        *float64           `json:"precioVentaTotal"`
+	Cambio                  *float64           `json:"cambio"`
+	Cliente                 *Cliente           `json:"cliente"`
+	VendidoPor              *Empleado          `json:"vendidoPor"`
+	ModificadoPor           *Empleado          `json:"modificadoPor"`
+	Tipo                    *string            `json:"tipo"`
+	DescuentoEfectivo       *float64           `json:"descuentoEfectivo"`
+	DescuentoPorcentaje     *float64           `json:"descuentoPorcentaje"`
+	Tpv                     *string            `json:"tpv"`
+	CreatedAt               *int64             `json:"createdAt"`
+	UpdatedAt               *int64             `json:"updatedAt"`
+}
+
+type ProductoVendido struct {
+	ID              *string `json:"_id"`
+	Nombre          *string `json:"nombre"`
+	Familia         *string `json:"familia"`
+	Proveedor       *string `json:"proveedor"`
+	PrecioCompra    *string `json:"precioCompra"`
+	PrecioVenta     *string `json:"precioVenta"`
+	PrecioFinal     *string `json:"precioFinal"`
+	CantidadVendida *string `json:"cantidadVendida"`
+	Dto             *string `json:"dto"`
+	Iva             *string `json:"iva"`
+	Margen          *string `json:"margen"`
+	Ean             *string `json:"ean"`
+}
+
+type Cliente struct {
+	ID     *string `json:"_id"`
+	Nombre *string `json:"nombre"`
+	Calle  *string `json:"calle"`
+	Cp     *string `json:"cp"`
+	Nif    *string `json:"nif"`
+}
+
+type Empleado struct {
+	ID             *string `json:"_id"`
+	Nombre         *string `json:"nombre"`
+	Apellidos      *string `json:"apellidos"`
+	Dni            *string `json:"dni"`
+	Email          *string `json:"email"`
+	FechaAlta      *string `json:"fechaAlta"`
+	Genero         *string `json:"genero"`
+	HorasPorSemana *string `json:"horasPorSemana"`
+	Rol            *string `json:"rol"`
+}
+
+type Cierre struct {
+	ID                   *string   `json:"_id"`
+	Tpv                  *string   `json:"tpv"`
+	AbiertoPor           *Empleado `json:"abiertoPor"`
+	CerradoPor           *Empleado `json:"cerradoPor"`
+	Apertura             *string   `json:"apertura"`
+	Cierre               *string   `json:"cierre"`
+	CajaInicial          *float64  `json:"cajaInicial"`
+	NumVentas            *int32    `json:"numVentas"`
+	VentasEfectivo       *float64  `json:"ventasEfectivo"`
+	VentasTarjeta        *float64  `json:"ventasTarjeta"`
+	VentasTotales        *float64  `json:"ventasTotales"`
+	DineroEsperadoEnCaja *float32  `json:"dineroEsperadoEnCaja"`
+	DineroRealEnCaja     *float32  `json:"dineroRealEnCaja"`
+	DineroRetirado       *float32  `json:"dineroRetirado"`
+	FondoDeCaja          *float32  `json:"fondoDeCaja"`
+	Beneficio            *float32  `json:"beneficio"`
+	Nota                 *string   `json:"nota"`
+}
+
+type Devolucion struct {
+	ID                 *string             `json:"_id"`
+	ProductosDevueltos *[]ProductoDevuelto `json:"productosDevueltos"`
+	DineroDevuelto     *float32            `json:"dineroDevuelto"`
+	VentaOriginal      *Venta              `json:"ventaOriginal"`
+	Tpv                *string             `json:"tpv"`
+	Cliente            *Cliente            `json:"cliente"`
+	Trabajador         *Empleado           `json:"trabajador"`
+	ModificadoPor      *Empleado           `json:"modificadoPor"`
+	CreatedAt          *string             `json:"createdAt"`
+	UpdatedAt          *string             `json:"updatedAt"`
+}
+
+type ProductoDevuelto struct {
+	ID               *string  `json:"_id"`
+	Nombre           *string  `json:"nombre"`
+	Familia          *string  `json:"familia"`
+	Proveedor        *string  `json:"proveedor"`
+	PrecioCompra     *float32 `json:"precioCompra"`
+	PrecioVenta      *float32 `json:"precioVenta"`
+	PrecioFinal      *float32 `json:"precioFinal"`
+	CantidadDevuelta *int32   `json:"cantidadDevuelta"`
+	Dto              *float32 `json:"dto"`
+	Iva              *float32 `json:"iva"`
+	Margen           *float32 `json:"margen"`
+	Ean              *string  `json:"ean"`
+}
+
+type Producto struct {
+	ID              *string  `json:"_id"`
+	Nombre          *string  `json:"nombre"`
+	Familia         *string  `json:"familia"`
+	Proveedor       *string  `json:"proveedor"`
+	PrecioCompra    *float32 `json:"precioCompra"`
+	PrecioVenta     *float32 `json:"precioVenta"`
+	Iva             *float32 `json:"iva"`
+	Margen          *float32 `json:"margen"`
+	Ean             *string  `json:"ean"`
+	Promociones     *string  `json:"promociones"`
+	Alta            *bool    `json:"alta"`
+	Cantidad        *int32   `json:"cantidad"`
+	CantidadRestock *int32   `json:"cantidadRestock"`
+	CreatedAt       *string  `json:"createdAt"`
+	UpdatedAt       *string  `json:"updatedAt"`
+}
