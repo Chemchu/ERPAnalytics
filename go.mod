@@ -3,6 +3,7 @@ module github.com/Chemchu/ERPAnalytics
 go 1.18
 
 require (
+	github.com/akrennmair/slice v0.0.0-20220105203817-49445747ab81
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

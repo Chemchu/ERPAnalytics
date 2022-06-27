@@ -15,7 +15,7 @@ func getAPI(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Bienvenido al API de Análisis de datos de ERPSolution", "successful": true})
 }
 
-func postSalesSummaryByDate(c *gin.Context) {
+func postSummarizeSales(c *gin.Context) {
 	var ventasPointer []types.Venta
 	if err := c.ShouldBindJSON(&ventasPointer); err != nil {
 		fmt.Printf("Error: %+v", err)
@@ -33,7 +33,7 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/api", getAPI)
-	router.POST("/api/analitycs/summaryByDay", postSalesSummaryByDate)
+	router.POST("/api/analitycs/summarize", postSummarizeSales)
 
 	router.Run("0.0.0.0:6060")
 }
