@@ -24,23 +24,23 @@ type Venta struct {
 	DescuentoEfectivo       *float64           `json:"descuentoEfectivo"`
 	DescuentoPorcentaje     *float64           `json:"descuentoPorcentaje"`
 	Tpv                     *string            `json:"tpv"`
-	CreatedAt               *int64             `json:"createdAt"`
-	UpdatedAt               *int64             `json:"updatedAt"`
+	CreatedAt               *int64             `json:"createdAt,string"`
+	UpdatedAt               *int64             `json:"updatedAt,string"`
 }
 
 type ProductoVendido struct {
-	ID              *string `json:"_id"`
-	Nombre          *string `json:"nombre"`
-	Familia         *string `json:"familia"`
-	Proveedor       *string `json:"proveedor"`
-	PrecioCompra    *string `json:"precioCompra"`
-	PrecioVenta     *string `json:"precioVenta"`
-	PrecioFinal     *string `json:"precioFinal"`
-	CantidadVendida *string `json:"cantidadVendida"`
-	Dto             *string `json:"dto"`
-	Iva             *string `json:"iva"`
-	Margen          *string `json:"margen"`
-	Ean             *string `json:"ean"`
+	ID              *string  `json:"_id"`
+	Nombre          *string  `json:"nombre"`
+	Familia         *string  `json:"familia"`
+	Proveedor       *string  `json:"proveedor,omitempty"`
+	PrecioCompra    *float64 `json:"precioCompra"`
+	PrecioVenta     *float64 `json:"precioVenta"`
+	PrecioFinal     *float64 `json:"precioFinal"`
+	CantidadVendida *int     `json:"cantidadVendida"`
+	Dto             *float64 `json:"dto"`
+	Iva             *float64 `json:"iva"`
+	Margen          *float64 `json:"margen"`
+	Ean             *string  `json:"ean"`
 }
 
 type Cliente struct {
@@ -59,7 +59,7 @@ type Empleado struct {
 	Email          *string `json:"email"`
 	FechaAlta      *string `json:"fechaAlta"`
 	Genero         *string `json:"genero"`
-	HorasPorSemana *string `json:"horasPorSemana"`
+	HorasPorSemana *int    `json:"horasPorSemana"`
 	Rol            *string `json:"rol"`
 }
 
