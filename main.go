@@ -33,7 +33,7 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/api", getAPI)
-	router.POST("/api/analitycs/summarize", postSummarizeSales)
+	router.POST("/api/analytics/summary", postSummarizeSales)
 
 	router.Run("0.0.0.0:6060")
 }
