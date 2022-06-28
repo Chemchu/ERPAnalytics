@@ -32,17 +32,12 @@ func postSummarizeSales(c *gin.Context) {
 		return
 	}
 
-	// p2 := Prueba2{
-	// 	Succ: true,
-	// }
-	// p1 := Prueba{
-	// 	Msg: "prueba1",
-	// 	//Data: p2,
-	// }
-	// pRes, _ := json.Marshal(&p1)
-
 	summaryResponse := analitycs.GetSalesSummaryByDay(ventas)
-	c.JSON(http.StatusOK, summaryResponse)
+	if summaryResponse.Successful {
+		c.JSON(http.StatusOK, summaryResponse)
+	} else {
+		c.JSON(http.StatusBadRequest, summaryResponse)
+	}
 }
 
 func main() {

@@ -9,13 +9,13 @@ import (
 )
 
 func GetSalesSummaryByDay(ventas []types.Venta) types.APIResponse {
-	// data := fmt.Sprintf("%+v", Summarize(&ventas))
-	// data := Summarize(&ventas)
 	msg := "Petición realizada correctamente"
 	successful := true
 	data, err := json.Marshal(Summarize(&ventas))
 	if err != nil {
-		panic("No se ha podido convertir el Summary a JSON")
+		msg = "Error al convertir el Summary s JSON"
+		successful = false
+		data = nil
 	}
 
 	return types.APIResponse{
