@@ -34,10 +34,10 @@ type VentasPorHora struct {
 	DineroDescontadoHora  *float64 `json:"dineroDescontadoHora"`
 }
 
-func GetSalesSummaryByDay(ventas *[]types.Venta, dia string) APIResponse {
+func GetSalesSummaryByDay(ventas *[]types.Venta) APIResponse {
+	data := GetSummary(ventas)
 	msg := "Petición realizada correctamente"
 	successful := true
-	data := GetSummary(ventas)
 
 	return APIResponse{
 		Message:    &msg,
@@ -81,6 +81,24 @@ func GetSummary(ventas *[]types.Venta) Summary {
 	ivaPagado := 0.0
 	prodVendidosTotal := 0
 	ventasPorHoraMap := make(map[string]VentasPorHora)
+	ventasPorHora := MapToArray(ventasPorHoraMap)
+	numVentas := len(*ventas)
+	mediaVentas := total / float64(numVentas)
+	mediaCantidadVendida := 0.0
+
+	if len(*ventas) <= 0 {
+		return Summary{
+			VentasPorHora:             &ventasPorHora,
+			Beneficio:                 &beneficioTotal,
+			TotalVentas:               &total,
+			NumVentas:                 &numVentas,
+			DineroDescontado:          &dineroDescontadoTotal,
+			CantidadProductosVendidos: &prodVendidosTotal,
+			MediaVentas:               &mediaVentas,
+			MediaCantidadVenida:       &mediaCantidadVendida,
+			IVAPagado:                 &ivaPagado,
+		}
+	}
 
 	for _, venta := range *ventas {
 		// Inicializa los valores
@@ -119,10 +137,12 @@ func GetSummary(ventas *[]types.Venta) Summary {
 		ventasPorHoraMap[hora] = venta
 	}
 
-	ventasPorHora := MapToArray(ventasPorHoraMap)
-	numVentas := len(*ventas)
-	mediaVentas := total / float64(numVentas)
-	mediaCantidadVendida := float64(prodVendidosTotal / numVentas)
+	ventasPorHora = MapToArray(ventasPorHoraMap)
+	numVentas = len(*ventas)
+	mediaVentas = total / float64(numVentas)
+	if numVentas > 0 {
+		mediaCantidadVendida = float64(prodVendidosTotal / numVentas)
+	}
 
 	return Summary{
 		VentasPorHora:             &ventasPorHora,

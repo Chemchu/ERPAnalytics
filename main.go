@@ -16,12 +16,16 @@ func getAPI(c *gin.Context) {
 }
 
 func postSummarizeSales(c *gin.Context) {
+	// body, _ := ioutil.ReadAll(c.Request.Body)
+	// println(string(body))
 	var ventasPointer []types.Venta
 	if err := c.ShouldBindJSON(&ventasPointer); err != nil {
-		fmt.Printf("Error: %+v", err)
+		fmt.Printf("Error: %+v\n", err)
 		c.JSON(http.StatusOK, gin.H{"message": err, "successful": false})
+		return
 	}
-	summaryResponse := analitycs.GetSalesSummaryByDay(&ventasPointer, "a")
+	// fmt.Println(*ventasPointer[0].ID)
+	summaryResponse := analitycs.GetSalesSummaryByDay(&ventasPointer)
 	c.JSON(http.StatusOK, summaryResponse)
 }
 
