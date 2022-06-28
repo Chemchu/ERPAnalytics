@@ -8,7 +8,7 @@ COPY go.sum ./
 RUN go mod download
 COPY . ./
 
-RUN go build -o /erpanalytics
+RUN go build -o /erp_analytics
 
-EXPOSE 8080
-CMD [ "/erpanalytics" ]
+EXPOSE 6060
+CMD [ "/erp_analytics" ]
