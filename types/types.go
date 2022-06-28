@@ -133,7 +133,7 @@ type Producto struct {
 
 type Summary struct {
 	VentasPorHora             []VentasPorHora `json:"ventasPorHora"`
-	Beneficio                 float64         `json:"Beneficio"`
+	Beneficio                 float64         `json:"beneficio"`
 	TotalVentas               float64         `json:"totalVentas"`
 	NumVentas                 int             `json:"numVentas"`
 	MediaVentas               float64         `json:"mediaVentas"`
