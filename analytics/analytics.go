@@ -2,6 +2,7 @@ package analitycs
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -13,7 +14,7 @@ func GetSalesSummaryByDay(ventas []types.Venta) types.APIResponse {
 	successful := true
 	data, err := json.Marshal(Summarize(&ventas))
 	if err != nil {
-		msg = "Error al convertir el Summary s JSON"
+		msg = fmt.Sprintf("Error al convertir el Summary a JSON: %s", err.Error())
 		successful = false
 		data = nil
 	}
