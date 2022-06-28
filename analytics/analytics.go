@@ -62,8 +62,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	prodVendidosTotal := 0
 	ventasPorHoraMap := make(map[string]types.VentasPorHora)
 	ventasPorHora := MapToArray(ventasPorHoraMap)
-	numVentas := len(*ventas)
-	mediaVentas := total / float64(numVentas)
+	numVentas := 0
+	mediaVentas := 0.0
 	mediaCantidadVendida := 0.0
 
 	if len(*ventas) <= 0 {
