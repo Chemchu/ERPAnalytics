@@ -15,15 +15,6 @@ func getAPI(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Bienvenido al API de Análisis de datos de ERPSolution", "successful": true})
 }
 
-// type Prueba struct {
-// 	Msg string `json:"msg"`
-// 	//Data Prueba2 `json:"data,omitempty"`
-// }
-
-// type Prueba2 struct {
-// 	Succ bool `json:"msg"`
-// }
-
 func postSummarizeSales(c *gin.Context) {
 	var ventas []types.Venta
 	if err := c.ShouldBindJSON(&ventas); err != nil {
