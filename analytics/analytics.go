@@ -58,6 +58,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	beneficioTotal := 0.0
 	dineroDescontadoTotal := 0.0
 	total := 0.0
+	totalTarjeta := 0.0
+	totalEfectivo := 0.0
 	ivaPagado := 0.0
 	prodVendidosTotal := 0
 	ventasPorHoraMap := make(map[string]types.VentasPorHora)
@@ -85,6 +87,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		beneficioHora := 0.0
 		dineroDescontadoHora := 0.0
 		totalHora := 0.0
+		totalTarjetaHora := 0.0
+		totalEfectivoHora := 0.0
 		prodVendidosHora := 0
 		hora := strconv.FormatInt(int64(time.UnixMilli(venta.CreatedAt).Hour()), 10)
 
@@ -92,8 +96,26 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		if ventaEnMap, containsValue := ventasPorHoraMap[hora]; containsValue {
 			beneficioHora = ventaEnMap.BeneficioHora
 			totalHora = ventaEnMap.TotalVentaHora
+			totalTarjetaHora = ventaEnMap.TotalTarjetaHora
+			totalEfectivoHora = ventaEnMap.TotalEfectivoHora
 			prodVendidosHora = ventaEnMap.ProductosVendidosHora
 			dineroDescontadoHora = ventaEnMap.DineroDescontadoHora
+		}
+
+		if venta.Tipo == "Efectivo" || venta.Tipo == "Cobro rápido" {
+			totalEfectivo += venta.PrecioVentaTotal
+			totalEfectivoHora += venta.PrecioVentaTotal
+		} else {
+			if venta.Tipo == "Tarjeta" {
+				totalTarjeta += venta.PrecioVentaTotal
+				totalTarjetaHora += venta.PrecioVentaTotal
+			} else {
+				totalEfectivo += venta.PrecioVentaTotal - venta.Cambio
+				totalTarjeta += venta.PrecioVentaTotal - venta.Cambio
+
+				totalEfectivoHora += venta.DineroEntregadoEfectivo - venta.Cambio
+				totalTarjetaHora += venta.DineroEntregadoTarjeta
+			}
 		}
 
 		for _, producto := range venta.Productos {
@@ -111,6 +133,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 			Hora:                  hora,
 			BeneficioHora:         beneficioHora,
 			TotalVentaHora:        totalHora,
+			TotalEfectivoHora:     totalEfectivoHora,
+			TotalTarjetaHora:      totalTarjetaHora,
 			ProductosVendidosHora: prodVendidosHora,
 			DineroDescontadoHora:  dineroDescontadoHora,
 		}
@@ -128,6 +152,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		VentasPorHora:             ventasPorHora,
 		Beneficio:                 beneficioTotal,
 		TotalVentas:               total,
+		TotalEfectivo:             totalEfectivo,
+		TotalTarjeta:              totalTarjeta,
 		NumVentas:                 numVentas,
 		DineroDescontado:          dineroDescontadoTotal,
 		CantidadProductosVendidos: prodVendidosTotal,

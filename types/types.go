@@ -135,6 +135,8 @@ type Summary struct {
 	VentasPorHora             []VentasPorHora `json:"ventasPorHora"`
 	Beneficio                 float64         `json:"beneficio"`
 	TotalVentas               float64         `json:"totalVentas"`
+	TotalEfectivo             float64         `json:"totalEfectivo"`
+	TotalTarjeta              float64         `json:"totalTarjeta"`
 	NumVentas                 int             `json:"numVentas"`
 	MediaVentas               float64         `json:"mediaVentas"`
 	MediaCantidadVenida       float64         `json:"mediaCantidadVenida"`
@@ -147,6 +149,8 @@ type VentasPorHora struct {
 	Hora                  string  `json:"hora"`
 	BeneficioHora         float64 `json:"beneficioHora"`
 	TotalVentaHora        float64 `json:"totalVentaHora"`
+	TotalEfectivoHora     float64 `json:"totalEfectivoHora"`
+	TotalTarjetaHora      float64 `json:"totalTarjetaHora"`
 	ProductosVendidosHora int     `json:"productosVendidosHora"`
 	DineroDescontadoHora  float64 `json:"dineroDescontadoHora"`
 }
