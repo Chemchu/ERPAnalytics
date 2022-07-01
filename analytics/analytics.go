@@ -3,6 +3,7 @@ package analitycs
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 
@@ -26,13 +27,19 @@ func GetSalesSummaryByDay(ventas []types.Venta) types.APIResponse {
 	}
 }
 
-func MapToArray(d map[string]types.VentasPorHora) []types.VentasPorHora {
-	m := make([]types.VentasPorHora, 0, len(d))
-	for _, val := range d {
-		m = append(m, val)
+func MapToArray(mapObject map[string]types.VentasPorHora) []types.VentasPorHora {
+	horasSorted := make([]string, 0, len(mapObject))
+	for k := range mapObject {
+		horasSorted = append(horasSorted, k)
+	}
+	sort.Strings(horasSorted)
+
+	resArray := make([]types.VentasPorHora, 0, len(mapObject))
+	for _, val := range horasSorted {
+		resArray = append(resArray, mapObject[val])
 	}
 
-	return m
+	return resArray
 }
 
 func GetMostFrequentValue(array []string) string {
@@ -55,6 +62,22 @@ func GetMostFrequentValue(array []string) string {
 }
 
 func Summarize(ventas *[]types.Venta) types.Summary {
+	if len(*ventas) <= 0 {
+		return types.Summary{
+			VentasPorHora:             []types.VentasPorHora{},
+			Beneficio:                 0.0,
+			TotalVentas:               0.0,
+			NumVentas:                 0,
+			DineroDescontado:          0.0,
+			CantidadProductosVendidos: 0,
+			MediaVentas:               0,
+			MediaCantidadVenida:       0,
+			IVAPagado:                 0.0,
+			TotalEfectivo:             0.0,
+			TotalTarjeta:              0.0,
+		}
+	}
+
 	beneficioTotal := 0.0
 	dineroDescontadoTotal := 0.0
 	total := 0.0
@@ -63,34 +86,19 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	ivaPagado := 0.0
 	prodVendidosTotal := 0
 	ventasPorHoraMap := make(map[string]types.VentasPorHora)
-	ventasPorHora := MapToArray(ventasPorHoraMap)
 	numVentas := 0
 	mediaVentas := 0.0
 	mediaCantidadVendida := 0.0
 
-	if len(*ventas) <= 0 {
-		return types.Summary{
-			VentasPorHora:             ventasPorHora,
-			Beneficio:                 beneficioTotal,
-			TotalVentas:               total,
-			NumVentas:                 numVentas,
-			DineroDescontado:          dineroDescontadoTotal,
-			CantidadProductosVendidos: prodVendidosTotal,
-			MediaVentas:               mediaVentas,
-			MediaCantidadVenida:       mediaCantidadVendida,
-			IVAPagado:                 ivaPagado,
-		}
-	}
-
 	for _, venta := range *ventas {
-		// Inicializa los valores
 		beneficioHora := 0.0
 		dineroDescontadoHora := 0.0
 		totalHora := 0.0
 		totalTarjetaHora := 0.0
 		totalEfectivoHora := 0.0
 		prodVendidosHora := 0
-		hora := strconv.FormatInt(int64(time.UnixMilli(venta.CreatedAt).Hour()), 10) + ":00"
+		hora := strconv.FormatInt(int64(time.UnixMilli(venta.CreatedAt).Hour()), 10)
+		FormatHour(&hora)
 
 		// Comprueba si ya hay ventas añadidas para una deterrminada hora
 		if ventaEnMap, containsValue := ventasPorHoraMap[hora]; containsValue {
@@ -121,15 +129,16 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		for _, producto := range venta.Productos {
 			beneficioTotal += (producto.PrecioFinal - producto.PrecioCompra) * float64(producto.CantidadVendida)
 			beneficioHora += (producto.PrecioFinal - producto.PrecioCompra) * float64(producto.CantidadVendida)
-			total += producto.PrecioFinal * float64(producto.CantidadVendida)
-			totalHora += producto.PrecioFinal * float64(producto.CantidadVendida)
 			prodVendidosTotal += producto.CantidadVendida
 			prodVendidosHora += producto.CantidadVendida
 			dineroDescontadoHora += (producto.PrecioVenta - producto.PrecioFinal) * float64(producto.CantidadVendida)
 			ivaPagado += producto.PrecioCompra * (producto.Iva / 100)
 		}
 
-		venta := types.VentasPorHora{
+		total += venta.PrecioVentaTotal
+		totalHora += venta.PrecioVentaTotal
+
+		ventaPorHora := types.VentasPorHora{
 			Hora:                  hora,
 			BeneficioHora:         beneficioHora,
 			TotalVentaHora:        totalHora,
@@ -138,10 +147,10 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 			ProductosVendidosHora: prodVendidosHora,
 			DineroDescontadoHora:  dineroDescontadoHora,
 		}
-		ventasPorHoraMap[hora] = venta
+		ventasPorHoraMap[hora] = ventaPorHora
 	}
 
-	ventasPorHora = MapToArray(ventasPorHoraMap)
+	ventasPorHora := MapToArray(ventasPorHoraMap)
 	numVentas = len(*ventas)
 	mediaVentas = total / float64(numVentas)
 	if numVentas > 0 {
@@ -161,4 +170,11 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		MediaCantidadVenida:       mediaCantidadVendida,
 		IVAPagado:                 ivaPagado,
 	}
+}
+
+func FormatHour(hora *string) {
+	if len(*hora) < 2 {
+		*hora = "0" + *hora
+	}
+	*hora += ":00"
 }
