@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Chemchu/ERPAnalytics/placeholders"
 	"github.com/Chemchu/ERPAnalytics/types"
 )
 
@@ -63,8 +64,9 @@ func GetMostFrequentValue(array []string) string {
 
 func Summarize(ventas *[]types.Venta) types.Summary {
 	if len(*ventas) <= 0 {
+
 		return types.Summary{
-			VentasPorHora:             []types.VentasPorHora{},
+			VentasPorHora:             placeholders.VentasPorHoraPlaceholder(),
 			Beneficio:                 0.0,
 			TotalVentas:               0.0,
 			NumVentas:                 0,
@@ -178,3 +180,8 @@ func FormatHour(hora *string) {
 	}
 	*hora += ":00"
 }
+
+// TODO Hacer la función
+// func CalcularBeneficio(producto *types.ProductoVendido) float32 {
+
+// }
