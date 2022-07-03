@@ -3,6 +3,7 @@ package analitycs
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"time"
@@ -67,6 +68,7 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 
 		return types.Summary{
 			VentasPorHora:             placeholders.VentasPorHoraPlaceholder(),
+			ProductosMasVendidos:      placeholders.ProductosMasVendidosPlaceholder(),
 			Beneficio:                 0.0,
 			TotalVentas:               0.0,
 			NumVentas:                 0,
@@ -88,6 +90,7 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	ivaPagado := 0.0
 	prodVendidosTotal := 0
 	ventasPorHoraMap := make(map[string]types.VentasPorHora)
+	productosVendidosMap := make(map[string]int)
 	numVentas := 0
 	mediaVentas := 0.0
 	mediaCantidadVendida := 0.0
@@ -111,30 +114,16 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 			prodVendidosHora = ventaEnMap.ProductosVendidosHora
 			dineroDescontadoHora = ventaEnMap.DineroDescontadoHora
 		}
-
-		if venta.Tipo == "Efectivo" || venta.Tipo == "Cobro rápido" {
-			totalEfectivo += venta.PrecioVentaTotal
-			totalEfectivoHora += venta.PrecioVentaTotal
-		} else {
-			if venta.Tipo == "Tarjeta" {
-				totalTarjeta += venta.PrecioVentaTotal
-				totalTarjetaHora += venta.PrecioVentaTotal
-			} else {
-				totalEfectivo += venta.PrecioVentaTotal - venta.Cambio
-				totalTarjeta += venta.PrecioVentaTotal - venta.Cambio
-
-				totalEfectivoHora += venta.DineroEntregadoEfectivo - venta.Cambio
-				totalTarjetaHora += venta.DineroEntregadoTarjeta
-			}
-		}
+		CalcularDineroEntregado(venta, &totalEfectivo, &totalTarjeta, &totalEfectivoHora, &totalTarjetaHora)
 
 		for _, producto := range venta.Productos {
-			beneficioTotal += (producto.PrecioFinal - producto.PrecioCompra) * float64(producto.CantidadVendida)
-			beneficioHora += (producto.PrecioFinal - producto.PrecioCompra) * float64(producto.CantidadVendida)
+			beneficioTotal += CalcularBeneficio(producto)
+			beneficioHora += CalcularBeneficio(producto)
 			prodVendidosTotal += producto.CantidadVendida
 			prodVendidosHora += producto.CantidadVendida
-			dineroDescontadoHora += (producto.PrecioVenta - producto.PrecioFinal) * float64(producto.CantidadVendida)
-			ivaPagado += producto.PrecioCompra * (producto.Iva / 100)
+			dineroDescontadoHora += CalcularDTOAplicado(producto)
+			ivaPagado += CalcularIVA(producto)
+			productosVendidosMap = UpdateProductosVendidos(producto, productosVendidosMap)
 		}
 
 		total += venta.PrecioVentaTotal
@@ -160,7 +149,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	}
 
 	return types.Summary{
-		VentasPorHora:             ventasPorHora,
+		VentasPorHora: ventasPorHora,
+		//ProductosMasVendidos:      GetMostFrequent(productosVendidosMap),
 		Beneficio:                 beneficioTotal,
 		TotalVentas:               total,
 		TotalEfectivo:             totalEfectivo,
@@ -181,7 +171,67 @@ func FormatHour(hora *string) {
 	*hora += ":00"
 }
 
-// TODO Hacer la función
-// func CalcularBeneficio(producto *types.ProductoVendido) float32 {
+func CalcularBeneficio(producto types.ProductoVendido) float64 {
+	// PrecioFinal = PrecioCompra +* IVA +* Beneficio(Margen)
+	// Beneficio = PrecioFinal - PrecioCompra +* IVA
+	precioConIva := (producto.PrecioCompra * (producto.Iva / 100)) + producto.PrecioCompra
+	beneficio := (producto.PrecioFinal - precioConIva) * float64(producto.CantidadVendida)
+	beneficio = math.Round(beneficio*100) / 100
 
-// }
+	return beneficio
+}
+
+func CalcularIVA(producto types.ProductoVendido) float64 {
+	ivaPagado := producto.PrecioCompra * (producto.Iva / 100) * float64(producto.CantidadVendida)
+	ivaPagado = math.Round(ivaPagado*100) / 100
+	return ivaPagado
+}
+
+func CalcularDTOAplicado(producto types.ProductoVendido) float64 {
+	dto := (producto.PrecioVenta - producto.PrecioFinal) * float64(producto.CantidadVendida)
+	dto = math.Round(dto*100) / 100
+	return dto
+}
+
+func CalcularDineroEntregado(venta types.Venta, efectivo *float64, tarjeta *float64, efectivoHora *float64, tarjetaHora *float64) {
+	if venta.Tipo == "Efectivo" || venta.Tipo == "Cobro rápido" {
+		*efectivo += venta.PrecioVentaTotal
+		*efectivoHora += venta.PrecioVentaTotal
+	} else {
+		if venta.Tipo == "Tarjeta" {
+			*tarjeta += venta.PrecioVentaTotal
+			*tarjetaHora += venta.PrecioVentaTotal
+		} else {
+			*efectivo += venta.PrecioVentaTotal - venta.Cambio
+			*tarjeta += venta.PrecioVentaTotal - venta.Cambio
+
+			*efectivoHora += venta.DineroEntregadoEfectivo - venta.Cambio
+			*tarjetaHora += venta.DineroEntregadoTarjeta
+		}
+	}
+}
+
+func UpdateProductosVendidos(producto types.ProductoVendido, productosVendidosMap map[string]int) map[string]int {
+	prodCantidad, containValue := productosVendidosMap[producto.Ean]
+	if containValue {
+		prodCantidad += producto.CantidadVendida
+		productosVendidosMap[producto.Ean] = prodCantidad
+	} else {
+		productosVendidosMap[producto.Ean] = producto.CantidadVendida
+	}
+
+	return productosVendidosMap
+}
+
+func GetMostFrequent(hMap map[string]int) []string {
+	keys := make([]string, 0, len(hMap))
+	for key := range hMap {
+		keys = append(keys, key)
+	}
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		return hMap[keys[i]] < hMap[keys[j]]
+	})
+
+	return keys
+}
