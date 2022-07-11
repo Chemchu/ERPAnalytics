@@ -65,7 +65,6 @@ func GetMostFrequentValue(array []string) string {
 
 func Summarize(ventas *[]types.Venta) types.Summary {
 	if len(*ventas) <= 0 {
-
 		return types.Summary{
 			VentasPorHora:             placeholders.VentasPorHoraPlaceholder(),
 			ProductosMasVendidos:      placeholders.ProductosMasVendidosPlaceholder(),
