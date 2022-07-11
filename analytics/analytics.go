@@ -67,7 +67,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	if len(*ventas) <= 0 {
 		return types.Summary{
 			VentasPorHora:             placeholders.VentasPorHoraPlaceholder(),
-			ProductosMasVendidos:      placeholders.ProductosMasVendidosPlaceholder(),
+			ProductosMasVendidos:      []types.ProductoMasVendido{},
+			FamiliasMasVendidas:       []types.FamiliaMasVendida{},
 			Beneficio:                 0.0,
 			TotalVentas:               0.0,
 			NumVentas:                 0,
@@ -89,10 +90,10 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	ivaPagado := 0.0
 	prodVendidosTotal := 0
 	ventasPorHoraMap := make(map[string]types.VentasPorHora)
-	productosVendidosMap := make(map[string]int)
 	numVentas := 0
 	mediaVentas := 0.0
 	mediaCantidadVendida := 0.0
+	productosVendidos := []types.ProductoVendido{}
 
 	for _, venta := range *ventas {
 		beneficioHora := 0.0
@@ -122,7 +123,7 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 			prodVendidosHora += producto.CantidadVendida
 			dineroDescontadoHora += CalcularDTOAplicado(producto)
 			ivaPagado += CalcularIVA(producto)
-			productosVendidosMap = UpdateProductosVendidos(producto, productosVendidosMap)
+			productosVendidos = append(productosVendidos, producto)
 		}
 
 		total += venta.PrecioVentaTotal
@@ -147,9 +148,11 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		mediaCantidadVendida = float64(prodVendidosTotal / numVentas)
 	}
 
+	prodMasVendidos, familiasMasVendidas := GetMasVendidos(productosVendidos)
 	return types.Summary{
-		VentasPorHora: ventasPorHora,
-		//ProductosMasVendidos:      GetMostFrequent(productosVendidosMap),
+		VentasPorHora:             ventasPorHora,
+		ProductosMasVendidos:      prodMasVendidos,
+		FamiliasMasVendidas:       familiasMasVendidas,
 		Beneficio:                 beneficioTotal,
 		TotalVentas:               total,
 		TotalEfectivo:             totalEfectivo,
@@ -210,27 +213,54 @@ func CalcularDineroEntregado(venta types.Venta, efectivo *float64, tarjeta *floa
 	}
 }
 
-func UpdateProductosVendidos(producto types.ProductoVendido, productosVendidosMap map[string]int) map[string]int {
-	prodCantidad, containValue := productosVendidosMap[producto.Ean]
-	if containValue {
-		prodCantidad += producto.CantidadVendida
-		productosVendidosMap[producto.Ean] = prodCantidad
-	} else {
-		productosVendidosMap[producto.Ean] = producto.CantidadVendida
+func GetMasVendidos(productosVendidos []types.ProductoVendido) ([]types.ProductoMasVendido, []types.FamiliaMasVendida) {
+	productosVendidosMap := make(map[string]types.ProductoVendido)
+	freqVendido := make(map[string]int)
+	freqFamilia := make(map[string]int)
+
+	for _, prod := range productosVendidos {
+		freqVendido[prod.Ean] += prod.CantidadVendida
+		freqFamilia[prod.Familia] += prod.CantidadVendida
+
+		if _, containsProduct := productosVendidosMap[prod.Ean]; !containsProduct {
+			productosVendidosMap[prod.Ean] = prod
+		}
 	}
 
-	return productosVendidosMap
-}
-
-func GetMostFrequent(hMap map[string]int) []string {
-	keys := make([]string, 0, len(hMap))
-	for key := range hMap {
-		keys = append(keys, key)
+	familiaMasFrecuentes := []types.FamiliaMasVendida{}
+	for familia, cantidad := range freqFamilia {
+		familiaMasFrecuentes = append(familiaMasFrecuentes, types.FamiliaMasVendida{
+			Familia:         familia,
+			CantidadVendida: cantidad,
+		})
 	}
 
-	sort.SliceStable(keys, func(i, j int) bool {
-		return hMap[keys[i]] < hMap[keys[j]]
+	productosMasFrecuentes := []types.ProductoMasVendido{}
+	for ean, cantidad := range freqVendido {
+		productosMasFrecuentes = append(productosMasFrecuentes, types.ProductoMasVendido{
+			ID:              productosVendidosMap[ean].ID,
+			Nombre:          productosVendidosMap[ean].Nombre,
+			Familia:         productosVendidosMap[ean].Familia,
+			Ean:             ean,
+			CantidadVendida: cantidad,
+		})
+	}
+
+	sort.Slice(productosMasFrecuentes, func(i, j int) bool {
+		return productosMasFrecuentes[i].CantidadVendida > productosMasFrecuentes[j].CantidadVendida
 	})
 
-	return keys
+	longitudProd := len(productosMasFrecuentes)
+	if longitudProd > 10 {
+		longitudProd = 10
+	}
+	productosMasFrecuentes = productosMasFrecuentes[0:longitudProd]
+
+	longitudFamilia := len(familiaMasFrecuentes)
+	if longitudFamilia > 10 {
+		longitudFamilia = 10
+	}
+	familiaMasFrecuentes = familiaMasFrecuentes[0:longitudFamilia]
+
+	return productosMasFrecuentes, familiaMasFrecuentes
 }

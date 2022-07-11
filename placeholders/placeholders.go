@@ -71,7 +71,3 @@ func VentasPorHoraPlaceholder() []types.VentasPorHora {
 		DineroDescontadoHora:  0.0,
 	}}
 }
-
-func ProductosMasVendidosPlaceholder() []types.ProductoVendido {
-	return []types.ProductoVendido{}
-}
