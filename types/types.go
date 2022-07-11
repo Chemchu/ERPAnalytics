@@ -161,13 +161,11 @@ type Summary struct {
 }
 
 type VentasPorHora struct {
-	Hora                     string               `json:"hora"`
-	ProductosMasVendidosHora []ProductoMasVendido `json:"productosMasVendidosHora"`
-	FamiliasMasVendidasHora  []FamiliaMasVendida  `json:"familiasMasVendidasHora"`
-	BeneficioHora            float64              `json:"beneficioHora"`
-	TotalVentaHora           float64              `json:"totalVentaHora"`
-	TotalEfectivoHora        float64              `json:"totalEfectivoHora"`
-	TotalTarjetaHora         float64              `json:"totalTarjetaHora"`
-	ProductosVendidosHora    int                  `json:"productosVendidosHora"`
-	DineroDescontadoHora     float64              `json:"dineroDescontadoHora"`
+	Hora                  string  `json:"hora"`
+	BeneficioHora         float64 `json:"beneficioHora"`
+	TotalVentaHora        float64 `json:"totalVentaHora"`
+	TotalEfectivoHora     float64 `json:"totalEfectivoHora"`
+	TotalTarjetaHora      float64 `json:"totalTarjetaHora"`
+	ProductosVendidosHora int     `json:"productosVendidosHora"`
+	DineroDescontadoHora  float64 `json:"dineroDescontadoHora"`
 }
