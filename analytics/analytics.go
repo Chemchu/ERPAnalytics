@@ -102,7 +102,7 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		totalTarjetaHora := 0.0
 		totalEfectivoHora := 0.0
 		prodVendidosHora := 0
-		hora := strconv.FormatInt(int64(time.UnixMilli(venta.CreatedAt).Hour()), 10)
+		hora := strconv.FormatInt(int64(time.UnixMilli(venta.CreatedAt).UTC().Hour()), 10)
 		FormatHour(&hora)
 
 		// Comprueba si ya hay ventas añadidas para una deterrminada hora
