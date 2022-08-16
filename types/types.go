@@ -154,6 +154,8 @@ type Summary struct {
 	TotalTarjeta              float64              `json:"totalTarjeta"`
 	NumVentas                 int                  `json:"numVentas"`
 	MediaVentas               float64              `json:"mediaVentas"`
+	VentaMinima               float64              `json:"ventaMinima"`
+	VentaMaxima               float64              `json:"ventaMaxima"`
 	MediaCantidadVenida       float64              `json:"mediaCantidadVenida"`
 	CantidadProductosVendidos int                  `json:"cantidadProductosVendidos"`
 	DineroDescontado          float64              `json:"dineroDescontado"`

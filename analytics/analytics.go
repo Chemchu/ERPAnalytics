@@ -92,6 +92,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	ventasPorHoraMap := make(map[string]types.VentasPorHora)
 	numVentas := 0
 	mediaVentas := 0.0
+	ventaMinima := 0.0
+	ventaMaxima := 0.0
 	mediaCantidadVendida := 0.0
 	productosVendidos := []types.ProductoVendido{}
 
@@ -129,6 +131,13 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		total += venta.PrecioVentaTotal
 		totalHora += venta.PrecioVentaTotal
 
+		if ventaMinima <= 0.0 || ventaMinima > venta.PrecioVentaTotal {
+			ventaMinima = venta.PrecioVentaTotal
+		}
+		if ventaMaxima <= 0.0 || ventaMaxima < venta.PrecioVentaTotal {
+			ventaMaxima = venta.PrecioVentaTotal
+		}
+
 		ventaPorHora := types.VentasPorHora{
 			Hora:                  hora,
 			BeneficioHora:         beneficioHora,
@@ -161,6 +170,8 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		DineroDescontado:          dineroDescontadoTotal,
 		CantidadProductosVendidos: prodVendidosTotal,
 		MediaVentas:               mediaVentas,
+		VentaMinima:               ventaMinima,
+		VentaMaxima:               ventaMaxima,
 		MediaCantidadVenida:       mediaCantidadVendida,
 		IVAPagado:                 ivaPagado,
 	}
@@ -174,10 +185,6 @@ func FormatHour(hora *string) {
 }
 
 func CalcularBeneficio(producto types.ProductoVendido) float64 {
-	// PrecioFinal = PrecioCompra +* IVA +* Beneficio(Margen)
-	// Beneficio = PrecioFinal - PrecioCompra +* IVA
-
-	// precioConIva := (producto.PrecioCompra * (producto.Iva / 100)) + producto.PrecioCompra
 	beneficio := (producto.PrecioFinal - producto.PrecioCompra) * float64(producto.CantidadVendida)
 	beneficio = math.Round(beneficio*100) / 100
 
