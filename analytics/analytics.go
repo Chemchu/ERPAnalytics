@@ -184,8 +184,10 @@ func FormatHour(hora *string) {
 	*hora += ":00"
 }
 
+// Beneficio = precioFinal - precioCompraConIVA
 func CalcularBeneficio(producto types.ProductoVendido) float64 {
-	beneficio := (producto.PrecioFinal - producto.PrecioCompra) * float64(producto.CantidadVendida)
+	precioCompraConIva := producto.PrecioCompra + (producto.PrecioCompra * producto.Iva)
+	beneficio := (producto.PrecioFinal - precioCompraConIva) * float64(producto.CantidadVendida)
 	beneficio = math.Round(beneficio*100) / 100
 
 	return beneficio
