@@ -107,7 +107,7 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 		hora := strconv.FormatInt(int64(time.UnixMilli(venta.CreatedAt).UTC().Hour()), 10)
 		FormatHour(&hora)
 
-		// Comprueba si ya hay ventas añadidas para una deterrminada hora
+		// Comprueba si ya hay ventas añadidas para una determinada hora
 		if ventaEnMap, containsValue := ventasPorHoraMap[hora]; containsValue {
 			beneficioHora = ventaEnMap.BeneficioHora
 			totalHora = ventaEnMap.TotalVentaHora
@@ -214,8 +214,8 @@ func CalcularDineroEntregado(venta types.Venta, efectivo *float64, tarjeta *floa
 			*tarjeta += venta.PrecioVentaTotal
 			*tarjetaHora += venta.PrecioVentaTotal
 		} else {
-			*efectivo += venta.PrecioVentaTotal - venta.Cambio
-			*tarjeta += venta.PrecioVentaTotal - venta.Cambio
+			*efectivo += venta.DineroEntregadoEfectivo - venta.Cambio
+			*tarjeta += venta.DineroEntregadoTarjeta
 
 			*efectivoHora += venta.DineroEntregadoEfectivo - venta.Cambio
 			*tarjetaHora += venta.DineroEntregadoTarjeta
