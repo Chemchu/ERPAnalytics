@@ -1,4 +1,4 @@
-package analitycs
+package sales_analitycs
 
 import (
 	"encoding/json"
@@ -63,9 +63,9 @@ func GetMostFrequentValue(array []string) string {
 	return palabraMasFrecuente
 }
 
-func Summarize(ventas *[]types.Venta) types.Summary {
+func Summarize(ventas *[]types.Venta) types.SalesSummary {
 	if len(*ventas) <= 0 {
-		return types.Summary{
+		return types.SalesSummary{
 			VentasPorHora:             placeholders.VentasPorHoraPlaceholder(),
 			ProductosMasVendidos:      []types.ProductoMasVendido{},
 			FamiliasMasVendidas:       []types.FamiliaMasVendida{},
@@ -158,7 +158,7 @@ func Summarize(ventas *[]types.Venta) types.Summary {
 	}
 
 	prodMasVendidos, familiasMasVendidas := GetMasVendidos(productosVendidos)
-	return types.Summary{
+	return types.SalesSummary{
 		VentasPorHora:             ventasPorHora,
 		ProductosMasVendidos:      prodMasVendidos,
 		FamiliasMasVendidas:       familiasMasVendidas,

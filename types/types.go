@@ -144,7 +144,18 @@ type Producto struct {
 	UpdatedAt       string  `json:"updatedAt"`
 }
 
-type Summary struct {
+type ProductsSummary struct {
+	Productos             []Producto    `json:"productos"`
+	VentasPorHora         VentasPorHora `json:"ventasPorHora"`
+	CantidadVendida       int32         `json:"cantidadVendida"`
+	CosteTotalProducto    float64       `json:"costeTotalProducto"`
+	VentaTotal            float64       `json:"ventaTotal"`
+	Beneficio             float64       `json:"beneficio"`
+	IVAPagado             float64       `json:"ivaPagado"`
+	FrecuenciaVentaDiaria float64       `json:"frecuentaVentaDiaria"` // Cuantas unidades se venden al día
+}
+
+type SalesSummary struct {
 	VentasPorHora             []VentasPorHora      `json:"ventasPorHora"`
 	ProductosMasVendidos      []ProductoMasVendido `json:"productosMasVendidos"`
 	FamiliasMasVendidas       []FamiliaMasVendida  `json:"familiasMasVendidas"`
