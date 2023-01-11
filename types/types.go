@@ -144,15 +144,18 @@ type Producto struct {
 	UpdatedAt       string  `json:"updatedAt"`
 }
 
-type ProductsSummary struct {
-	Productos             []Producto    `json:"productos"`
-	VentasPorHora         VentasPorHora `json:"ventasPorHora"`
-	CantidadVendida       int32         `json:"cantidadVendida"`
-	CosteTotalProducto    float64       `json:"costeTotalProducto"`
-	VentaTotal            float64       `json:"ventaTotal"`
-	Beneficio             float64       `json:"beneficio"`
-	IVAPagado             float64       `json:"ivaPagado"`
-	FrecuenciaVentaDiaria float64       `json:"frecuentaVentaDiaria"` // Cuantas unidades se venden al día
+type ProductSummary struct {
+	IDProducto            string  `json:"_id"`
+	NombreProducto        string  `json:"nombreProducto"`
+	Ean                   string  `json:"ean"`
+	Familia               string  `json:"familia"`
+	Proveedor             string  `json:"proveedor"`
+	CantidadVendida       int32   `json:"cantidadVendida"`
+	CosteTotalProducto    float64 `json:"costeTotalProducto"`
+	VentaTotal            float64 `json:"ventaTotal"`
+	Beneficio             float64 `json:"beneficio"`
+	IVAPagado             float64 `json:"ivaPagado"`
+	FrecuenciaVentaDiaria float64 `json:"frecuentaVentaDiaria"` // Cuantas unidades se venden al día
 }
 
 type SalesSummary struct {
