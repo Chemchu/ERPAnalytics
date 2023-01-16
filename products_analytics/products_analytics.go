@@ -44,6 +44,11 @@ func Summarize(ventas *[]types.Venta) []types.ProductSummary {
 			productoSummary, existeSummary := productosMap[productos[j].Ean]
 			producto := productos[j]
 
+			precioConIva := producto.PrecioCompra + (producto.PrecioCompra * (producto.Iva / 100))
+			beneficioProducto := producto.PrecioFinal - precioConIva
+			ivaProducto := producto.PrecioCompra * (producto.Iva / 100)
+
+			// Si el producto todavía no se ha añadido al Map
 			if !existeSummary {
 				var summary = types.ProductSummary{
 					IDProducto:         producto.ID,
@@ -53,13 +58,26 @@ func Summarize(ventas *[]types.Venta) []types.ProductSummary {
 					Proveedor:          producto.Proveedor,
 					CantidadVendida:    int32(producto.CantidadVendida),
 					CosteTotalProducto: float64(producto.CantidadVendida) * float64(producto.PrecioCompra),
+					VentaTotal:         producto.PrecioFinal * float64(producto.CantidadVendida),
+					Beneficio:          float64(producto.CantidadVendida) * beneficioProducto,
+					IVAPagado:          float64(producto.CantidadVendida) * ivaProducto,
 				}
 				// Actualizar el MAP
 				productosMap[producto.Ean] = summary
 			} else {
-				// Actualizar el summary con el nuevo producto vendido
-				updatedSummary := types.ProductSummary{}
-
+				// En caso de que el producto exista en el Map, actualizar el summary
+				var updatedSummary = types.ProductSummary{
+					IDProducto:         producto.ID,
+					NombreProducto:     producto.Nombre,
+					Ean:                producto.Ean,
+					Familia:            producto.Familia,
+					Proveedor:          producto.Proveedor,
+					CantidadVendida:    productoSummary.CantidadVendida + int32(producto.CantidadVendida),
+					CosteTotalProducto: productoSummary.CosteTotalProducto + (float64(producto.CantidadVendida) * float64(producto.PrecioCompra)),
+					VentaTotal:         productoSummary.VentaTotal + (producto.PrecioFinal * float64(producto.CantidadVendida)),
+					Beneficio:          productoSummary.Beneficio + (float64(producto.CantidadVendida) * beneficioProducto),
+					IVAPagado:          productoSummary.IVAPagado + (float64(producto.CantidadVendida) * ivaProducto),
+				}
 				productosMap[producto.Ean] = updatedSummary
 			}
 		}
