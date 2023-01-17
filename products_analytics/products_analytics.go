@@ -3,13 +3,16 @@ package products_analytics
 import (
 	"encoding/json"
 	"fmt"
+
 	// "math"
 	// "sort"
 	// "strconv"
 	// "time"
 	//
 	// "github.com/Chemchu/ERPAnalytics/placeholders"
+	"github.com/Chemchu/ERPAnalytics/data_structure"
 	"github.com/Chemchu/ERPAnalytics/types"
+	"github.com/golang-module/carbon/v2"
 )
 
 func GetProductsSummary(ventas []types.Venta) types.APIResponse {
@@ -34,14 +37,18 @@ func Summarize(ventas *[]types.Venta) []types.ProductSummary {
 		return []types.ProductSummary{}
 	}
 
-	// Map de los productosMap vendidos
-	productosMap := make(map[string]types.ProductSummary)
+	productosMap := data_structure.StringProductSummaryMap{}
+	fechasSet := data_structure.StringSet{}
 
-	// Iterar sobre cada producto vendido
 	for i := 0; i < len(*ventas); i++ {
+		fecha := carbon.CreateFromTimestampMilli((*ventas)[i].CreatedAt).ToDateString()
+		if !fechasSet.Has(fecha) {
+			fechasSet.Add(fecha)
+		}
+
 		productos := (*ventas)[i].Productos
 		for j := 0; j < len(productos); j++ {
-			productoSummary, existeSummary := productosMap[productos[j].Ean]
+			productoSummary, existeSummary := productosMap.Has(productos[j].Ean)
 			producto := productos[j]
 
 			precioConIva := producto.PrecioCompra + (producto.PrecioCompra * (producto.Iva / 100))
@@ -62,8 +69,8 @@ func Summarize(ventas *[]types.Venta) []types.ProductSummary {
 					Beneficio:          float64(producto.CantidadVendida) * beneficioProducto,
 					IVAPagado:          float64(producto.CantidadVendida) * ivaProducto,
 				}
-				// Actualizar el MAP
-				productosMap[producto.Ean] = summary
+
+				productosMap.Add(producto.Ean, summary)
 			} else {
 				// En caso de que el producto exista en el Map, actualizar el summary
 				var updatedSummary = types.ProductSummary{
@@ -78,10 +85,16 @@ func Summarize(ventas *[]types.Venta) []types.ProductSummary {
 					Beneficio:          productoSummary.Beneficio + (float64(producto.CantidadVendida) * beneficioProducto),
 					IVAPagado:          productoSummary.IVAPagado + (float64(producto.CantidadVendida) * ivaProducto),
 				}
-				productosMap[producto.Ean] = updatedSummary
+
+				productosMap.Add(producto.Ean, updatedSummary)
 			}
 		}
 	}
 
-	return []types.ProductSummary{}
+	for ean, producto := range productosMap {
+		producto.FrecuenciaVentaDiaria = float64(producto.CantidadVendida) / float64(fechasSet.Length())
+		productosMap.Add(ean, producto)
+	}
+
+	return productosMap.Values()
 }
