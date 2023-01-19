@@ -9,10 +9,10 @@ import (
 	"github.com/golang-module/carbon/v2"
 )
 
-func GetProductsSummary(ventas []types.Venta) types.APIResponse {
+func GetProductsSummary(ventas []types.Venta, productos []string) types.APIResponse {
 	msg := "Petición realizada correctamente"
 	successful := true
-	data, err := json.Marshal(Summarize(&ventas))
+	data, err := json.Marshal(Summarize(&ventas, &productos))
 	if err != nil {
 		msg = fmt.Sprintf("Error al convertir el Summary a JSON: %s", err.Error())
 		successful = false
@@ -26,13 +26,21 @@ func GetProductsSummary(ventas []types.Venta) types.APIResponse {
 	}
 }
 
-func Summarize(ventas *[]types.Venta) []types.ProductSummary {
+func Summarize(ventas *[]types.Venta, productosAnalizar *[]string) []types.ProductSummary {
 	if len(*ventas) <= 0 {
+		return []types.ProductSummary{}
+	}
+	if len(*productosAnalizar) <= 0 {
 		return []types.ProductSummary{}
 	}
 
 	productosMap := data_structure.StringProductSummaryMap{}
 	fechasSet := data_structure.StringSet{}
+	productosAnalizarSet := data_structure.StringSet{}
+
+	for i := 0; i < len(*productosAnalizar); i++ {
+		productosAnalizarSet.Add((*productosAnalizar)[i])
+	}
 
 	for i := 0; i < len(*ventas); i++ {
 		productosDeLaVenta := (*ventas)[i].Productos
@@ -42,6 +50,9 @@ func Summarize(ventas *[]types.Venta) []types.ProductSummary {
 		}
 
 		for j := 0; j < len(productosDeLaVenta); j++ {
+			// TODO
+			// Comprobar que el producto actual es el que quiere analizar el ciente
+
 			productoSummary, existeSummary := productosMap.Has(productosDeLaVenta[j].Ean)
 			productoVendido := productosDeLaVenta[j]
 
