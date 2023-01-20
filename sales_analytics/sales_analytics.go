@@ -63,9 +63,9 @@ func GetMostFrequentValue(array []string) string {
 	return palabraMasFrecuente
 }
 
-func Summarize(ventas *[]types.Venta) types.SalesSummary {
+func Summarize(ventas *[]types.Venta) types.VentaSummary {
 	if len(*ventas) <= 0 {
-		return types.SalesSummary{
+		return types.VentaSummary{
 			VentasPorHora:             placeholders.VentasPorHoraPlaceholder(),
 			ProductosMasVendidos:      []types.ProductoMasVendido{},
 			FamiliasMasVendidas:       []types.FamiliaMasVendida{},
@@ -158,7 +158,7 @@ func Summarize(ventas *[]types.Venta) types.SalesSummary {
 	}
 
 	prodMasVendidos, familiasMasVendidas := GetMasVendidos(productosVendidos)
-	return types.SalesSummary{
+	return types.VentaSummary{
 		VentasPorHora:             ventasPorHora,
 		ProductosMasVendidos:      prodMasVendidos,
 		FamiliasMasVendidas:       familiasMasVendidas,
