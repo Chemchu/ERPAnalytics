@@ -19,8 +19,8 @@ func main() {
 	router := gin.Default()
 	router.GET("/", endpoints.GetAPI)
 	router.GET("/api", endpoints.GetAPI)
-	router.POST("/api/analytics/ventas/summary", endpoints_productos.PostAnalyzeProducts)
-	router.POST("/api/analytics/productos/summary", endpoints_ventas.PostAnalyzeSales)
+	router.POST("/api/analytics/ventas/summary", endpoints_ventas.PostAnalyzeSales)
+	router.POST("/api/analytics/productos/summary", endpoints_productos.PostAnalyzeProducts)
 
 	router.Run("0.0.0.0:6060")
 }
